@@ -6,10 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import ormconfig from '@/ormconfig';
 import { ConfigModule } from '@nestjs/config';
+import { ArticleModule } from './article/article.module';
 @Module({
   imports: [ TypeOrmModule.forRoot(ormconfig),ConfigModule.forRoot(
     {isGlobal: true,}
-  ), TagModule, UserModule],
+  ), TagModule, UserModule, ArticleModule],
   controllers: [AppController],
   providers: [AppService],
 })

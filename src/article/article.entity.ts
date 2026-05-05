@@ -1,0 +1,40 @@
+import { UserEntity } from "../user/user.entity";
+import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity({name:'articles'})
+export class ArticleEntity {
+@PrimaryGeneratedColumn()
+id: number;
+
+@Column()
+slug : string
+
+@Column({default : ''})
+description : string
+
+@Column({default : ''})
+body : string
+
+@Column({default : ''})
+title : string
+
+@Column('simple-array')
+tagList : string[]
+
+@ManyToOne(() => UserEntity, user => user.articles)
+author : UserEntity
+
+@Column({type:'timestamp', default : () => 'CURRENT_TIMESTAMP'})
+createdAt : Date
+
+@Column({type:'timestamp', default : () => 'CURRENT_TIMESTAMP'})
+updatedAt : Date
+
+@Column({default:0})
+favoritesCount : number
+
+@BeforeUpdate()
+updateTimestamp() {
+    this.updatedAt = new Date();
+}
+}
