@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import slugify from 'slugify';
 import { DeleteResult } from 'typeorm/browser';
 import { UpdateArticleDTO } from '@/article/dto/updateArticle.dto';
+import { IArticlesResponse } from '@/article/types/articlesResponse.interface';
 @Injectable()
 export class ArticleService {
     constructor(@InjectRepository(ArticleEntity) private readonly articleRepository: Repository<ArticleEntity>) { }
@@ -50,6 +51,29 @@ export class ArticleService {
         }
         Object.assign(article, updateArticleDto);
         return await this.articleRepository.save(article);
+    }
+
+    async findAll(query : any) : Promise<IArticlesResponse> {
+        const queryBuilder = this.articleRepository.createQueryBuilder('article').leftJoinAndSelect('article.author', 'author');
+    if(query.tag){
+        queryBuilder.andWhere('article.tagList LIKE :tag', { tag: `%${query.tag}%` });
+    }
+    if(query.author){
+        queryBuilder.andWhere('author.username = :username', { username: query.author });
+    }
+    // queryBuilder.andWhere('article.authorId = :id' , {
+    //     id : author?.id
+    // })
+    if(query.limit){
+        queryBuilder.limit(query.limit);
+    }
+    if(query.offset){
+        queryBuilder.offset(query.offset);
+    }
+    queryBuilder.orderBy('article.createdAt', 'DESC');
+        const articles =  await queryBuilder.getMany();
+    const articlesCount = await queryBuilder.getCount();
+        return {articles , articlesCount}
     }
     generateSlug(title: string): string {
         const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
