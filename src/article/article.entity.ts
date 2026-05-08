@@ -21,7 +21,7 @@ title : string
 @Column('simple-array')
 tagList : string[]
 
-@ManyToOne(() => UserEntity, user => user.articles)
+@ManyToOne(() => UserEntity, user => user.articles,{eager : true})
 author : UserEntity
 
 @Column({type:'timestamp', default : () => 'CURRENT_TIMESTAMP'})
